@@ -1,0 +1,2636 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>විජාලී — සජලනය වන විජලනය | DulaChem</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #0b1120;
+      --bg-card: #111827;
+      --bg-elevated: #1e293b;
+      --bg-input: #0f172a;
+      --border: rgba(148, 163, 184, 0.16);
+      --border-focus: #10b981;
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --primary-glow: rgba(16, 185, 129, 0.25);
+      --accent-gold: #f59e0b;
+      --accent-gold-bg: rgba(245, 158, 11, 0.12);
+      --accent-gold-border: rgba(245, 158, 11, 0.45);
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.14);
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --text-muted: #64748b;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow: 0 18px 40px -15px rgba(0, 0, 0, 0.65);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', 'Noto Sans Sinhala', sans-serif;
+      background: radial-gradient(circle at top right, #0f2922 0%, #0b1120 45%, #070b14 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.55;
+      overflow-x: hidden;
+    }
+
+    .hidden { display: none !important; }
+
+    /* ================= TAP INVITE OVERLAY ================= */
+    #tap-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: radial-gradient(circle at center, #0d2b24 0%, #070b14 85%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      cursor: pointer;
+      user-select: none;
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+
+    #tap-screen.fade-out {
+      opacity: 0;
+      transform: scale(1.04);
+      pointer-events: none;
+    }
+
+    .door-ring {
+      width: 132px;
+      height: 132px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, rgba(16, 185, 129, 0.18), rgba(245, 158, 11, 0.12));
+      border: 2px solid rgba(16, 185, 129, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin-bottom: 28px;
+      box-shadow: 0 0 50px rgba(16, 185, 129, 0.22);
+      animation: pulseRing 2.2s infinite ease-in-out;
+    }
+
+    .door-ring::after {
+      content: '';
+      position: absolute;
+      inset: -12px;
+      border-radius: 50%;
+      border: 1px dashed rgba(245, 158, 11, 0.35);
+      animation: spinSlow 14s linear infinite;
+    }
+
+    @keyframes pulseRing {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 35px rgba(16, 185, 129, 0.22); }
+      50% { transform: scale(1.06); box-shadow: 0 0 60px rgba(16, 185, 129, 0.42); }
+    }
+
+    @keyframes spinSlow {
+      to { transform: rotate(360deg); }
+    }
+
+    .door-icon {
+      font-size: 52px;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
+    }
+
+    .tap-brand-app {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      background: linear-gradient(135deg, #34d399, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .tap-tagline-app {
+      font-size: 1.05rem;
+      color: #cbd5e1;
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    .tap-cta {
+      margin-top: 32px;
+      padding: 13px 30px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.16);
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      color: #6ee7b7;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.4px;
+      animation: bounceTap 1.6s infinite;
+    }
+
+    @keyframes bounceTap {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    .tap-footer-brand {
+      position: absolute;
+      bottom: 26px;
+      text-align: center;
+    }
+
+    .tap-footer-brand .co {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--accent-gold);
+      letter-spacing: 0.6px;
+    }
+
+    .tap-footer-brand .co-tag {
+      font-size: 0.78rem;
+      color: var(--text-sub);
+    }
+
+    /* ================= TOP HEADER ================= */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11, 17, 32, 0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+    }
+
+    .header-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .brand-lockup h1 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #34d399, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.2;
+    }
+
+    .brand-lockup span {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-sub);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .co-badge {
+      text-align: right;
+      margin-right: 4px;
+    }
+
+    .co-badge strong {
+      display: block;
+      font-size: 0.82rem;
+      color: var(--accent-gold);
+      line-height: 1.2;
+    }
+
+    .co-badge small {
+      font-size: 0.7rem;
+      color: var(--text-sub);
+    }
+
+    .icon-btn {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 8px 11px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--primary);
+      background: rgba(16, 185, 129, 0.14);
+    }
+
+    .icon-btn.danger:hover {
+      border-color: var(--danger);
+      background: var(--danger-bg);
+      color: #fca5a5;
+    }
+
+    /* ================= MAIN CONTAINER ================= */
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 18px 16px 60px;
+    }
+
+    /* ================= LOGIN VIEW ================= */
+    .login-wrap {
+      max-width: 430px;
+      margin: 28px auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 28px 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .login-head {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .login-head .pill {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #6ee7b7;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+    }
+
+    .login-head h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .login-head p {
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      margin-top: 4px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 6px;
+    }
+
+    .input-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    select,
+    textarea {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+
+    .toggle-pass {
+      position: absolute;
+      right: 10px;
+      background: transparent;
+      border: none;
+      color: var(--text-sub);
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 4px 6px;
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #042f2e;
+      font-weight: 800;
+      font-size: 0.98rem;
+      border: none;
+      padding: 13px 18px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+      box-shadow: 0 8px 20px -6px rgba(16, 185, 129, 0.55);
+    }
+
+    .btn-primary:active { transform: scale(0.98); }
+
+    .btn-secondary {
+      background: var(--bg-elevated);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--primary);
+    }
+
+    .error-banner {
+      background: var(--danger-bg);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      color: #fecaca;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.84rem;
+      margin-bottom: 14px;
+    }
+
+    /* ================= STUDENT TOP STATUS BAR ================= */
+    .status-bar {
+      background: linear-gradient(145deg, #111827, #162033);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .status-top-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.82rem;
+    }
+
+    .user-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+      color: #6ee7b7;
+    }
+
+    .live-clock {
+      color: var(--text-sub);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      gap: 10px;
+    }
+
+    .stat-tile {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+
+    .stat-tile .lbl {
+      font-size: 0.72rem;
+      color: var(--text-sub);
+      display: block;
+    }
+
+    .stat-tile .val {
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-top: 2px;
+      display: block;
+    }
+
+    .stat-tile .val.warn { color: var(--accent-gold); }
+    .stat-tile .val.danger { color: var(--danger); }
+    .stat-tile .val.ok { color: #34d399; }
+
+    /* ================= TABS ================= */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      background: var(--bg-card);
+      padding: 6px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 11px 12px;
+      border: none;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--text-sub);
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.22), rgba(16, 185, 129, 0.1));
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .badge-count {
+      background: var(--accent-gold);
+      color: #111827;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 999px;
+    }
+
+    /* ================= CATEGORIES & SUBCATEGORIES ================= */
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      margin-bottom: 10px;
+    }
+
+    .cat-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .cat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .cat-card.selected {
+      border-color: var(--primary);
+    }
+
+    .cat-header {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      padding: 14px 16px;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .cat-header-text strong {
+      display: block;
+      font-size: 0.94rem;
+      font-weight: 700;
+    }
+
+    .cat-header-text span {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--text-sub);
+      margin-top: 2px;
+    }
+
+    .cat-arrow {
+      font-size: 0.9rem;
+      color: var(--primary);
+      transition: transform 0.25s ease;
+    }
+
+    .cat-card.open .cat-arrow {
+      transform: rotate(180deg);
+    }
+
+    .subcat-drawer {
+      display: none;
+      padding: 0 14px 14px;
+      border-top: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.55);
+    }
+
+    .cat-card.open .subcat-drawer {
+      display: block;
+    }
+
+    .subcat-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-top: 12px;
+    }
+
+    .subcat-chip {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      color: #e2e8f0;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      text-align: left;
+    }
+
+    .subcat-chip:hover {
+      border-color: var(--primary);
+    }
+
+    .subcat-chip.active {
+      background: var(--primary);
+      color: #042f2e;
+      border-color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* ================= QUESTION COMPOSER + VOICE + IMAGE ================= */
+    .composer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .selected-topic-pill {
+      display: inline-block;
+      background: rgba(245, 158, 11, 0.14);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #fcd34d;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 5px 11px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    .composer-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .voice-btn {
+      background: rgba(16, 185, 129, 0.14);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #6ee7b7;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .voice-btn.listening {
+      background: rgba(239, 68, 68, 0.22);
+      border-color: var(--danger);
+      color: #fca5a5;
+      animation: pulseRing 1.3s infinite;
+    }
+
+    .img-attach-box {
+      background: rgba(15, 23, 42, 0.72);
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 14px;
+    }
+
+    .img-meta-note {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+      margin-top: 6px;
+      line-height: 1.45;
+    }
+
+    .img-preview-wrap {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .img-preview-wrap img {
+      max-width: 100%;
+      max-height: 220px;
+      width: auto;
+      height: auto;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      align-self: flex-start;
+    }
+
+    .attached-img-display {
+      margin-top: 10px;
+    }
+
+    .attached-img-display img {
+      max-width: 100%;
+      max-height: 280px;
+      width: auto;
+      height: auto;
+      border-radius: 10px;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      display: block;
+    }
+
+    /* ================= SOLUTIONS & SCROLLABLE HTML ANSWER ================= */
+    .q-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .q-card.pending-highlight {
+      background: linear-gradient(145deg, rgba(245, 158, 11, 0.12), #111827 55%);
+      border: 1.5px solid var(--accent-gold-border);
+      box-shadow: 0 8px 25px -10px rgba(245, 158, 11, 0.35);
+    }
+
+    .q-meta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.76rem;
+      color: var(--text-sub);
+      margin-bottom: 8px;
+    }
+
+    .status-pill {
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.72rem;
+    }
+
+    .status-pill.pending {
+      background: rgba(245, 158, 11, 0.22);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.5);
+    }
+
+    .status-pill.answered {
+      background: rgba(16, 185, 129, 0.18);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .q-topic {
+      font-size: 0.78rem;
+      color: #6ee7b7;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .q-text {
+      font-size: 0.95rem;
+      color: var(--text-main);
+      background: rgba(15, 23, 42, 0.7);
+      padding: 11px 13px;
+      border-radius: 10px;
+      border-left: 3px solid var(--primary);
+      white-space: pre-wrap;
+    }
+
+    .solution-box {
+      margin-top: 12px;
+      background: #0b1324;
+      border: 1px solid rgba(16, 185, 129, 0.32);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .solution-box-head {
+      background: rgba(16, 185, 129, 0.12);
+      padding: 8px 13px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #6ee7b7;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .solution-scroll-body {
+      max-height: 360px;
+      overflow-y: auto;
+      padding: 14px 16px;
+      font-size: 0.92rem;
+      color: #e2e8f0;
+      line-height: 1.65;
+    }
+
+    .solution-scroll-body h1,
+    .solution-scroll-body h2,
+    .solution-scroll-body h3,
+    .solution-scroll-body h4 {
+      color: #34d399;
+      margin: 12px 0 6px;
+      line-height: 1.35;
+    }
+
+    .solution-scroll-body p { margin-bottom: 10px; }
+    .solution-scroll-body ul,
+    .solution-scroll-body ol {
+      margin: 8px 0 12px 20px;
+    }
+    .solution-scroll-body li { margin-bottom: 5px; }
+    .solution-scroll-body strong,
+    .solution-scroll-body b { color: #fbbf24; }
+    .solution-scroll-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+      font-size: 0.84rem;
+    }
+    .solution-scroll-body th,
+    .solution-scroll-body td {
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      text-align: left;
+    }
+    .solution-scroll-body th {
+      background: rgba(16, 185, 129, 0.15);
+      color: #6ee7b7;
+    }
+    .solution-scroll-body blockquote {
+      border-left: 3px solid var(--accent-gold);
+      padding-left: 12px;
+      color: #cbd5e1;
+      margin: 8px 0;
+    }
+
+    /* ================= INSTRUCTOR PANEL ================= */
+    .instructor-q-item {
+      cursor: pointer;
+      transition: transform 0.15s ease, border-color 0.2s ease;
+    }
+
+    .instructor-q-item:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+    }
+
+    .student-dir-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .student-dir-card.locked {
+      border-color: rgba(239, 68, 68, 0.55);
+      background: linear-gradient(145deg, rgba(239, 68, 68, 0.1), #111827 60%);
+    }
+
+    .cred-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-input);
+      padding: 8px 10px;
+      border-radius: 9px;
+      margin: 8px 0;
+      font-size: 0.83rem;
+    }
+
+    .cred-tag {
+      font-family: monospace;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #6ee7b7;
+      background: rgba(16, 185, 129, 0.12);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .mini-btn {
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text-main);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .mini-btn.gold {
+      border-color: rgba(245, 158, 11, 0.5);
+      color: #fcd34d;
+    }
+
+    .mini-btn.red {
+      border-color: rgba(239, 68, 68, 0.5);
+      color: #fca5a5;
+    }
+
+    .mini-btn.green {
+      border-color: rgba(16, 185, 129, 0.5);
+      color: #6ee7b7;
+    }
+
+    /* ================= MODAL (ANSWER & RENEW) ================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 7, 18, 0.82);
+      backdrop-filter: blur(6px);
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+    }
+
+    .modal-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 680px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ================= TOAST ================= */
+    #toast {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%) translateY(90px);
+      background: #065f46;
+      color: #ecfdf5;
+      border: 1px solid #34d399;
+      padding: 11px 20px;
+      border-radius: 999px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      z-index: 9999;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      transition: transform 0.3s ease;
+      pointer-events: none;
+      text-align: center;
+      max-width: 92vw;
+    }
+
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 540px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .tap-brand-app { font-size: 2.1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= 1. TAP INVITE SCREEN ================= -->
+  <div id="tap-screen" onclick="enterDoor()">
+    <div class="door-ring">
+      <div class="door-icon">🚪</div>
+    </div>
+    <div class="tap-brand-app">විජාලී</div>
+    <div class="tap-tagline-app">සජලනය වන විජලනය</div>
+    <div class="tap-cta">👆 ඇතුළු වීමට තට්ටු කරන්න</div>
+
+    <div class="tap-footer-brand">
+      <div class="co">DulaChem — දුලාකෙම්</div>
+      <div class="co-tag">දිදුලන රසායනය</div>
+    </div>
+  </div>
+
+  <!-- ================= 2. APP HEADER ================= -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand-lockup">
+        <h1>විජාලී</h1>
+        <span>සජලනය වන විජලනය</span>
+      </div>
+      <div class="header-right">
+        <div class="co-badge">
+          <strong>DulaChem | දුලාකෙම්</strong>
+          <small>දිදුලන රසායනය</small>
+        </div>
+        <button id="sound-toggle-btn" class="icon-btn" onclick="toggleSound()" title="Sound On/Off">🔊</button>
+        <button id="logout-btn" class="icon-btn danger hidden" onclick="logout()">පිටවන්න</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- ================= 3. LOGIN SCREEN ================= -->
+    <section id="login-view" class="login-wrap">
+      <div class="login-head">
+        <span class="pill">🔐 පෞද්ගලික පිවිසුම</span>
+        <h2>පද්ධතියට පිවිසෙන්න</h2>
+        <p>ඔබට ලබා දී ඇති Username සහ Password ඇතුළත් කරන්න</p>
+      </div>
+
+      <div id="login-error" class="error-banner hidden"></div>
+
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label for="login-username">Username</label>
+          <input type="text" id="login-username" list="saved-usernames-list" placeholder="Username ඇතුළත් කරන්න" autocomplete="off" required />
+          <datalist id="saved-usernames-list"></datalist>
+        </div>
+
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <div class="input-box">
+            <input type="password" id="login-password" placeholder="••••••••" autocomplete="new-password" required />
+            <button type="button" class="toggle-pass" onclick="togglePasswordVisibility('login-password', this)">👁</button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary">ඇතුළු වන්න (Login)</button>
+      </form>
+    </section>
+
+    <!-- ================= 4. STUDENT DASHBOARD ================= -->
+    <section id="student-view" class="hidden">
+      <div class="status-bar">
+        <div class="status-top-row">
+          <div class="user-chip">👤 <span id="st-user-label">--</span></div>
+          <div class="live-clock" id="live-clock">--</div>
+        </div>
+        <div class="status-grid">
+          <div class="stat-tile">
+            <span class="lbl">පැකේජය (Category)</span>
+            <span class="val" id="st-pkg-name">--</span>
+          </div>
+          <div class="stat-tile">
+            <span class="lbl">ප්‍රශ්න (ඉතිරි / මුළු)</span>
+            <span class="val ok" id="st-attempts">--</span>
+          </div>
+          <div class="stat-tile">
+            <span class="lbl">දින (ඉතිරි / මුළු • පැය 24 චක්‍රය)</span>
+            <span class="val" id="st-days">--</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" id="st-tab-ask" onclick="switchStudentTab('ask')">✍️ ප්‍රශ්නයක් අසන්න</button>
+        <button class="tab-btn" id="st-tab-solutions" onclick="switchStudentTab('solutions')">
+          📘 විසඳුම් (Solutions) <span class="badge-count" id="st-sol-count">0</span>
+        </button>
+      </div>
+
+      <!-- Tab 1: Ask Question -->
+      <div id="st-panel-ask">
+        <div id="st-lock-alert" class="error-banner hidden"></div>
+
+        <div class="section-title">1. ප්‍රධාන විෂය ක්ෂේත්‍රය (Main Category) තෝරන්න:</div>
+        <div id="category-accordion" class="cat-list"></div>
+
+        <div class="composer-card">
+          <div class="composer-toolbar">
+            <div class="section-title" style="margin:0;">2. ඔබේ ප්‍රශ්නය ලියන්න:</div>
+            <button type="button" id="voice-btn" class="voice-btn" onclick="toggleSinhalaVoice()">
+              🎤 සිංහල Voice
+            </button>
+          </div>
+          <div id="selected-topic-display" class="selected-topic-pill">කරුණාකර ඉහතින් Main Category සහ Subcategory තෝරන්න</div>
+
+          <div class="form-group">
+            <textarea id="question-input" rows="5" placeholder="ඔබේ තාක්ෂණික ගැටලුව, අමුද්‍රව්‍යය, උෂ්ණත්වය හෝ අවශ්‍යතාව ලියන්න හෝ Voice බොත්තම ඔබා කියන්න..."></textarea>
+          </div>
+
+          <div class="img-attach-box">
+            <label for="st-image-input" style="display:block; font-size:0.82rem; font-weight:700; color:#6ee7b7; margin-bottom:6px;">
+              🖼️ රූපසටහනක් / ඡායාරූපයක් අමුණන්න (Image Upload — Optional)
+            </label>
+            <input type="file" id="st-image-input" accept="image/*" onchange="handleStudentImageSelect(event)" style="font-size:0.82rem; color:#cbd5e1;" />
+            <div class="img-meta-note">
+              Dimensions (දිග-පළල) වෙනස් නොකර, Size එක අනුව ගැළපෙන Ratio වලින් Compress කර ~320 KB ට අඩු ළඟම ප්‍රමාණයට සකසයි.
+            </div>
+            <div id="st-img-preview-wrap" class="img-preview-wrap hidden">
+              <img id="st-img-preview" alt="Student image preview" />
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+                <span id="st-img-info" style="font-size:0.76rem; color:#fcd34d;"></span>
+                <button type="button" class="mini-btn red" onclick="clearStudentImage()">✕ ඉවත් කරන්න</button>
+              </div>
+            </div>
+          </div>
+
+          <button id="send-q-btn" class="btn-primary" onclick="submitStudentQuestion()">ප්‍රශ්නය යොමු කරන්න (Submit Question)</button>
+        </div>
+      </div>
+
+      <!-- Tab 2: Solutions -->
+      <div id="st-panel-solutions" class="hidden">
+        <div class="section-title">ඔබ ඇසූ ප්‍රශ්න සහ ලැබුණු විසඳුම් (Solutions):</div>
+        <div id="student-solutions-list"></div>
+      </div>
+    </section>
+
+    <!-- ================= 5. INSTRUCTOR DASHBOARD ================= -->
+    <section id="instructor-view" class="hidden">
+      <div class="tabs">
+        <button class="tab-btn active" id="in-tab-queue" onclick="switchInstructorTab('queue')">
+          📩 ප්‍රශ්න පෝලිම <span class="badge-count" id="in-pending-badge">0</span>
+        </button>
+        <button class="tab-btn" id="in-tab-students" onclick="switchInstructorTab('students')">
+          👥 ශිෂ්‍ය පාලනය (Students)
+        </button>
+      </div>
+
+      <!-- Instructor Tab 1: Questions Queue -->
+      <div id="in-panel-queue">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+          <div class="section-title" style="margin:0;">උත්තර නැති ප්‍රශ්න (Pending) ඉහළින්ම පෙන්වයි</div>
+          <select id="in-q-filter" style="width:auto; padding:7px 12px; font-size:0.82rem;" onchange="renderInstructorQuestions()">
+            <option value="all">සියලුම ප්‍රශ්න (Pending මුලින්)</option>
+            <option value="pending">උත්තර නැති ඒවා පමණක් (Pending)</option>
+            <option value="answered">උත්තර දුන් ඒවා පමණක් (Answered)</option>
+          </select>
+        </div>
+        <div id="instructor-questions-list"></div>
+      </div>
+
+      <!-- Instructor Tab 2: Student Management -->
+      <div id="in-panel-students" class="hidden">
+        <div class="composer-card" style="margin-bottom:18px;">
+          <div class="section-title">➕ නව ශිෂ්‍යයෙක් ඇතුළත් කරන්න (Add Student)</div>
+          <form onsubmit="handleAddStudent(event)">
+            <div class="grid-2">
+              <div class="form-group">
+                <label>ශිෂ්‍යයාගේ නම (Student Name)</label>
+                <input type="text" id="new-st-name" placeholder="උදා: කමල් පෙරේරා" required />
+              </div>
+              <div class="form-group">
+                <label>පැකේජය (Category 1–4)</label>
+                <select id="new-st-pkg" required>
+                  <option value="1">Category 1: ප්‍රශ්න 10 — දින 14 (පැය 24/දින)</option>
+                  <option value="2">Category 2: ප්‍රශ්න 30 — මාස 1 (දින 30)</option>
+                  <option value="3">Category 3: ප්‍රශ්න 100 — මාස 3 (දින 90)</option>
+                  <option value="4">Category 4: ප්‍රශ්න 300 — මාස 6 (දින 180)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label>Auto Username (ස්ථිර ID)</label>
+                <input type="text" id="new-st-username" readonly style="color:#6ee7b7; font-weight:700;" />
+              </div>
+              <div class="form-group">
+                <label>Unique Password</label>
+                <div style="display:flex; gap:6px;">
+                  <input type="text" id="new-st-password" readonly style="color:#fbbf24; font-weight:700;" />
+                  <button type="button" class="btn-secondary" onclick="refreshGeneratedCredentials()">🔄</button>
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-primary">Activate & WhatsApp විස්තර Copy කරන්න</button>
+          </form>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+          <div class="section-title" style="margin:0;">📋 සියලුම ශිෂ්‍යයන්ගේ Username & Password ලැයිස්තුව</div>
+          <button class="mini-btn" onclick="toggleDirectoryPasswords()">👁 Passwords පෙන්වන්න/සඟවන්න</button>
+        </div>
+
+        <div class="form-group">
+          <input type="text" id="student-search" placeholder="🔍 නම හෝ Username අනුව සොයන්න..." oninput="renderStudentDirectory()" />
+        </div>
+
+        <div id="student-directory-list"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= 6. INSTRUCTOR ANSWER MODAL ================= -->
+  <div id="answer-modal" class="modal-backdrop hidden">
+    <div class="modal-box">
+      <div class="modal-head">
+        <strong style="color:#6ee7b7;">✍️ HTML විසඳුම සහ රූපසටහන ලබා දෙන්න</strong>
+        <button class="mini-btn red" onclick="closeModal('answer-modal')">✕ වසන්න</button>
+      </div>
+
+      <div id="modal-q-details" style="margin-bottom:12px;"></div>
+
+      <div class="form-group">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <label style="margin:0;">HTML පිළිතුර මෙහි Paste කරන්න:</label>
+          <div style="display:flex; gap:6px;">
+            <button type="button" class="mini-btn green" onclick="pasteFromClipboard()">📋 Paste</button>
+            <button type="button" class="mini-btn" onclick="document.getElementById('modal-answer-html').value=''; updateAnswerPreview();">Clear</button>
+          </div>
+        </div>
+        <textarea id="modal-answer-html" rows="6" placeholder="<h3>විජලන ක්‍රියාවලිය</h3><p>...</p>" oninput="updateAnswerPreview()"></textarea>
+      </div>
+
+      <div class="img-attach-box">
+        <label for="admin-image-input" style="display:block; font-size:0.82rem; font-weight:700; color:#fbbf24; margin-bottom:6px;">
+          🖼️ පිළිතුරට වෙනම රූපසටහනක් / Image Upload කරන්න (Optional)
+        </label>
+        <input type="file" id="admin-image-input" accept="image/*" onchange="handleAdminImageSelect(event)" style="font-size:0.82rem; color:#cbd5e1;" />
+        <div class="img-meta-note">
+          HTML කෝඩ් එකට අමතරව වෙනම Image එකක් එක් කරයි. Dimensions වෙනස් නොකර Size එක Smart Ratio වලින් Compress කර ~320 KB ට අඩු ළඟම ප්‍රමාණයට ගනී.
+        </div>
+        <div id="admin-img-preview-wrap" class="img-preview-wrap hidden">
+          <img id="admin-img-preview" alt="Admin diagram preview" />
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+            <span id="admin-img-info" style="font-size:0.76rem; color:#6ee7b7;"></span>
+            <button type="button" class="mini-btn red" onclick="clearAdminImage()">✕ Image ඉවත් කරන්න</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>ශිෂ්‍යයාට පෙනෙන ආකාරය (Live Safe Preview):</label>
+        <div class="solution-box">
+          <div class="solution-scroll-body" id="modal-answer-preview" style="max-height:190px;">
+            <span style="color:var(--text-muted);">පිළිතුර paste කළ විට මෙහි පෙනෙනු ඇත...</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="saveInstructorAnswer()">✅ විසඳුම Save කර ශිෂ්‍යයාට යවන්න</button>
+    </div>
+  </div>
+
+  <!-- ================= 7. RENEW PACKAGE MODAL ================= -->
+  <div id="renew-modal" class="modal-backdrop hidden">
+    <div class="modal-box" style="max-width:440px;">
+      <div class="modal-head">
+        <strong style="color:#fbbf24;">🔄 පැකේජය අලුත් කරන්න (Top-Up)</strong>
+        <button class="mini-btn red" onclick="closeModal('renew-modal')">✕</button>
+      </div>
+
+      <p id="renew-student-info" style="font-size:0.86rem; color:#cbd5e1; margin-bottom:12px;"></p>
+
+      <div style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.35); padding:10px; border-radius:10px; font-size:0.78rem; color:#fde68a; margin-bottom:14px;">
+        <strong>Top-Up නීතිය:</strong> පරණ ඉතිරි දින එකතු නොවේ (දැන් සිට පැය 24 චක්‍රයට අනුව අලුත් දින පටන් ගනී). කලින් පැකේජය expire වී හෝ attempts ඉවර වී ඇත්නම් පරණ attempts එකතු නොවේ; active කාලය තුළ ඉතිරි attempts තිබේ නම් පමණක් එකතු වේ.
+      </div>
+
+      <div class="form-group">
+        <label>නව පැකේජය තෝරන්න (Category 1–4):</label>
+        <select id="renew-pkg-select">
+          <option value="1">Category 1: ප්‍රශ්න 10 — දින 14</option>
+          <option value="2">Category 2: ප්‍රශ්න 30 — මාස 1 (දින 30)</option>
+          <option value="3">Category 3: ප්‍රශ්න 100 — මාස 3 (දින 90)</option>
+          <option value="4">Category 4: ප්‍රශ්න 300 — මාස 6 (දින 180)</option>
+        </select>
+      </div>
+
+      <button class="btn-primary" onclick="confirmRenewPackage()">පැකේජය යාවත්කාලීන කරන්න</button>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+  <!-- ================= FIREBASE SDK (OPTIONAL CLOUD SYNC) ================= -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const USE_FIREBASE = false;
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    if (USE_FIREBASE) {
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const stateRef = doc(db, "vijali_app", "main_state");
+
+      window.syncToCloud = async (stateObj) => {
+        try {
+          await setDoc(stateRef, stateObj);
+        } catch (err) {
+          console.error("Cloud sync error:", err);
+        }
+      };
+
+      onSnapshot(stateRef, (snap) => {
+        if (snap.exists()) {
+          window.applyRemoteState(snap.data());
+        }
+      });
+    }
+  </script>
+
+  <script>
+    /* =====================================================================
+       1. SOUND ENGINE (Web Audio API — Zero external audio files required)
+       ===================================================================== */
+    let soundEnabled = true;
+    let audioCtx = null;
+
+    function getAudioCtx() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContext();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playDoorKnock() {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioCtx();
+        const knockTimes = [0, 0.17, 0.34];
+        knockTimes.forEach((offset, idx) => {
+          const t = ctx.currentTime + offset;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(idx === 2 ? 155 : 140, t);
+          osc.frequency.exponentialRampToValueAtTime(52, t + 0.09);
+
+          gain.gain.setValueAtTime(0.001, t);
+          gain.gain.linearRampToValueAtTime(0.85, t + 0.008);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.11);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(t);
+          osc.stop(t + 0.12);
+
+          const osc2 = ctx.createOscillator();
+          const gain2 = ctx.createGain();
+          osc2.type = 'sine';
+          osc2.frequency.setValueAtTime(420, t);
+          osc2.frequency.exponentialRampToValueAtTime(110, t + 0.04);
+          gain2.gain.setValueAtTime(0.35, t);
+          gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.045);
+          osc2.connect(gain2);
+          gain2.connect(ctx.destination);
+          osc2.start(t);
+          osc2.stop(t + 0.05);
+        });
+      } catch (e) {}
+    }
+
+    function playUiSound(type = 'tap') {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioCtx();
+        const t = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        if (type === 'tap') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(520, t);
+          osc.frequency.exponentialRampToValueAtTime(680, t + 0.055);
+          gain.gain.setValueAtTime(0.14, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(t); osc.stop(t + 0.065);
+        } else if (type === 'success') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(523.25, t);
+          osc.frequency.setValueAtTime(659.25, t + 0.08);
+          osc.frequency.setValueAtTime(783.99, t + 0.16);
+          gain.gain.setValueAtTime(0.18, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.32);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(t); osc.stop(t + 0.33);
+        } else if (type === 'error') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(190, t);
+          osc.frequency.linearRampToValueAtTime(140, t + 0.18);
+          gain.gain.setValueAtTime(0.16, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(t); osc.stop(t + 0.21);
+        }
+      } catch (e) {}
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('sound-toggle-btn').textContent = soundEnabled ? '🔊' : '🔇';
+      if (soundEnabled) playUiSound('tap');
+      showToast(soundEnabled ? 'ශබ්දය සක්‍රීයයි (Sound On)' : 'ශබ්දය නිහඬයි (Sound Off)');
+    }
+
+    function enterDoor() {
+      playDoorKnock();
+      const tapScreen = document.getElementById('tap-screen');
+      tapScreen.classList.add('fade-out');
+      setTimeout(() => {
+        tapScreen.classList.add('hidden');
+      }, 540);
+    }
+
+    /* =====================================================================
+       2. DOMAIN DATA: PACKAGES & 5 MAIN CATEGORIES + SUBCATEGORIES
+       ===================================================================== */
+    const PACKAGES = {
+      1: { id: 1, name: 'Category 1 (ප්‍රශ්න 10 / දින 14)', attempts: 10, days: 14 },
+      2: { id: 2, name: 'Category 2 (ප්‍රශ්න 30 / මාස 1)', attempts: 30, days: 30 },
+      3: { id: 3, name: 'Category 3 (ප්‍රශ්න 100 / මාස 3)', attempts: 100, days: 90 },
+      4: { id: 4, name: 'Category 4 (ප්‍රශ්න 300 / මාස 6)', attempts: 300, days: 180 }
+    };
+
+    const CATEGORIES = [
+      {
+        id: 'dehydration',
+        title: '1. Dehydration & New Product Development',
+        si: 'විජලනය සහ නව නිෂ්පාදන සංවර්ධනය',
+        subs: [
+          'Fruits & Vegetables Dehydration (පළතුරු හා එළවළු විජලනය)',
+          'Spices, Herbs & Leafy Greens (කුළුබඩු, ඖෂධීය පැළෑටි හා පලා වර්ග)',
+          'Pre-Treatment & Color Retention (පූර්ව ප්‍රතිකාර සහ ස්වභාවික වර්ණය රැකගැනීම)',
+          'Temperature, Time & Moisture Curves (උෂ්ණත්වය, කාලය සහ තෙතමන වක්‍ර)',
+          'New Dehydrated Product Formulation (නව විජලිත නිෂ්පාදන සැකසීම)'
+        ]
+      },
+      {
+        id: 'qc',
+        title: '2. Quality Control, Testing Instruments & Certifications',
+        si: 'තත්ත්ව පාලනය, පරීක්ෂණ උපකරණ සහ සහතිකකරණය',
+        subs: [
+          'Moisture & Water Activity (aw) Testing Meters',
+          'GMP, HACCP & Food Safety Standards',
+          'ITI Lab Testing & Microbiological Reports',
+          'Shelf-Life Estimation & Stability Testing (කල් තබා ගැනීමේ කාලය)',
+          'Hygienic Processing & Contamination Control'
+        ]
+      },
+      {
+        id: 'special',
+        title: '3. Special, Trending & Market Demand Products',
+        si: 'විශේෂිත, ට්‍රෙන්ඩින් සහ වෙළඳපොළ ඉල්ලුම ඇති නිෂ්පාදන',
+        subs: [
+          '100% Natural / MSG-Free Seasoning Powders (ස්වභාවික රසකාරක කුඩු)',
+          'Instant Soup, Curry & Gravy Mixes',
+          'Herbal Teas, Fruit Infusions & Edible Flowers',
+          'Healthy Fruit Leathers, Chips & Snacks',
+          'Export Market Trends & B2B Bulk Supply'
+        ]
+      },
+      {
+        id: 'dryers',
+        title: '4. Dryers, Technologies & Equipment',
+        si: 'වියළන යන්ත්‍ර, තාක්ෂණයන් සහ උපකරණ',
+        subs: [
+          'Selecting a New Commercial Dryer (නව යන්ත්‍රයක් තෝරාගැනීම)',
+          'Upgrading & Modifying Existing Dryers (පවතින යන්ත්‍ර වැඩිදියුණු කිරීම)',
+          'DIY / Self-Build Dehydrator Design (තනිවම යන්ත්‍රයක් සාදා ගැනීම)',
+          'Open-Loop vs. Closed-Loop & Heat Pump Dryers',
+          'Freeze Drying & Solar Hybrid Technologies',
+          'Airflow Engineering, Trays & Troubleshooting'
+        ]
+      },
+      {
+        id: 'packaging',
+        title: '5. Packaging & Branding',
+        si: 'ඇසුරුම්කරණය සහ සන්නාමකරණය',
+        subs: [
+          'High-Barrier Pouches, Foil & Vacuum Packaging',
+          'Moisture & Oxygen Absorbers (Silica / O2 Scavengers)',
+          'Food Labeling Regulations & Nutrition Facts',
+          'Brand Positioning & Retail Packaging Design',
+          'Bulk Export Packaging & Storage Logistics'
+        ]
+      }
+    ];
+
+    /* =====================================================================
+       3. STATE MANAGEMENT, DEVICE USERNAME CACHE & LOCALSTORAGE
+       ===================================================================== */
+    const STORAGE_KEY = 'vijali_dulachem_state_v1';
+    const DEVICE_USERS_KEY = 'vijali_device_usernames_v1';
+    const INSTRUCTOR_CREDS = { username: 'admin', password: 'dulachem2026' };
+
+    function getDefaultState() {
+      const now = Date.now();
+      return {
+        students: [
+          {
+            username: 'VJL-001',
+            password: 'VJL@1024',
+            name: 'සාම්පල් ශිෂ්‍යයා (Demo)',
+            packageId: 1,
+            totalAttempts: 10,
+            remainingAttempts: 10,
+            totalDays: 14,
+            startDate: now,
+            endDate: now + 14 * 86400000,
+            locked: false
+          }
+        ],
+        questions: []
+      };
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          const initial = getDefaultState();
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
+          return initial;
+        }
+        return JSON.parse(raw);
+      } catch (e) {
+        return getDefaultState();
+      }
+    }
+
+    function getDeviceSavedUsernames() {
+      try {
+        const arr = JSON.parse(localStorage.getItem(DEVICE_USERS_KEY) || '[]');
+        return Array.isArray(arr) ? arr : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveDeviceUsername(u) {
+      if (!u) return;
+      const clean = u.trim();
+      if (!clean) return;
+      const list = getDeviceSavedUsernames();
+      const filtered = list.filter(item => item.toLowerCase() !== clean.toLowerCase());
+      filtered.unshift(clean);
+      try {
+        localStorage.setItem(DEVICE_USERS_KEY, JSON.stringify(filtered.slice(0, 10)));
+      } catch (e) {}
+      renderSavedUsernameDatalist();
+    }
+
+    function renderSavedUsernameDatalist() {
+      const dl = document.getElementById('saved-usernames-list');
+      if (!dl) return;
+      const list = getDeviceSavedUsernames();
+      dl.innerHTML = list.map(u => `<option value="${escapeHtml(u)}"></option>`).join('');
+    }
+
+    let appState = loadState();
+    let currentUser = null;
+    let selectedMainCat = null;
+    let selectedSubCat = null;
+    let showDirPasswords = false;
+    let activeAnswerQuestionId = null;
+    let activeRenewUsername = null;
+
+    let studentCompressedImage = null;
+    let adminCompressedImage = null;
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (err) {
+        showToast('⚠️ Storage ඉඩ සීමිතයි — කුඩා image භාවිත කරන්න.');
+      }
+      if (typeof window.syncToCloud === 'function') {
+        window.syncToCloud(appState);
+      }
+    }
+
+    window.applyRemoteState = function(remoteData) {
+      if (remoteData && Array.isArray(remoteData.students)) {
+        appState = remoteData;
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+        } catch (e) {}
+        refreshActiveView();
+      }
+    };
+
+    /* =====================================================================
+       4. AUTHENTICATION, FIRST-LETTER USERNAME INSTANT FILL & 24H CLOCK
+       ===================================================================== */
+    function togglePasswordVisibility(inputId, btn) {
+      const inp = document.getElementById(inputId);
+      if (inp.type === 'password') {
+        inp.type = 'text';
+        btn.textContent = '🙈';
+      } else {
+        inp.type = 'password';
+        btn.textContent = '👁';
+      }
+    }
+
+    (function initUsernameFirstLetterAssist() {
+      renderSavedUsernameDatalist();
+      const uInput = document.getElementById('login-username');
+      const pInput = document.getElementById('login-password');
+      if (!uInput) return;
+
+      uInput.addEventListener('input', (e) => {
+        if (e.inputType === 'deleteContentBackward' || e.inputType === 'deleteContentForward') return;
+        const val = uInput.value;
+        if (!val) return;
+        const savedList = getDeviceSavedUsernames();
+        const match = savedList.find(item => item.toLowerCase().startsWith(val.toLowerCase()));
+        if (match && match.toLowerCase() !== val.toLowerCase()) {
+          const startPos = val.length;
+          uInput.value = match;
+          try {
+            uInput.setSelectionRange(startPos, match.length);
+          } catch (err) {}
+        }
+      });
+
+      if (pInput) {
+        pInput.value = '';
+      }
+    })();
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const u = document.getElementById('login-username').value.trim();
+      const p = document.getElementById('login-password').value.trim();
+      const errEl = document.getElementById('login-error');
+      errEl.classList.add('hidden');
+
+      if (u.toLowerCase() === INSTRUCTOR_CREDS.username.toLowerCase() && p === INSTRUCTOR_CREDS.password) {
+        playUiSound('success');
+        saveDeviceUsername(u);
+        currentUser = { role: 'instructor', username: 'Instructor' };
+        openInstructorView();
+        return;
+      }
+
+      const student = appState.students.find(
+        s => s.username.toLowerCase() === u.toLowerCase() && s.password === p
+      );
+
+      if (!student) {
+        playUiSound('error');
+        errEl.textContent = 'වැරදි Username හෝ Password එකකි. කරුණාකර නැවත පරීක්ෂා කරන්න.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      if (student.locked) {
+        playUiSound('error');
+        errEl.textContent = '⚠️ ඔබගේ ගිණුම පරිපාලක විසින් අවහිර කර ඇත (Account Locked). කරුණාකර DulaChem අමතන්න.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      playUiSound('success');
+      saveDeviceUsername(student.username);
+      currentUser = { role: 'student', username: student.username };
+      openStudentView();
+    }
+
+    function logout() {
+      playUiSound('tap');
+      stopVoiceIfActive();
+      currentUser = null;
+      document.getElementById('student-view').classList.add('hidden');
+      document.getElementById('instructor-view').classList.add('hidden');
+      document.getElementById('logout-btn').classList.add('hidden');
+      document.getElementById('login-view').classList.remove('hidden');
+      document.getElementById('login-password').value = '';
+      renderSavedUsernameDatalist();
+    }
+
+    function updateClock() {
+      const el = document.getElementById('live-clock');
+      if (!el) return;
+      const now = new Date();
+      el.textContent = now.toLocaleString('si-LK', {
+        year: 'numeric', month: 'short', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      });
+      if (currentUser && currentUser.role === 'student') {
+        updateStudentDaysOnly();
+      }
+    }
+    setInterval(updateClock, 1000);
+
+    // 24-hour cycle per day (applies universally to all packages & students)
+    function getRemainingDays(student) {
+      const MS_PER_24H = 24 * 60 * 60 * 1000;
+      const totalDurationMs = (student.totalDays || 14) * MS_PER_24H;
+      const effectiveEnd = student.startDate ? (student.startDate + totalDurationMs) : student.endDate;
+      const diffMs = effectiveEnd - Date.now();
+      if (diffMs <= 0) return 0;
+      return Math.max(0, Math.floor(diffMs / MS_PER_24H));
+    }
+
+    function updateStudentDaysOnly() {
+      const student = appState.students.find(s => s.username === currentUser.username);
+      if (!student) return;
+      const remDays = getRemainingDays(student);
+      const daysEl = document.getElementById('st-days');
+      if (daysEl) {
+        daysEl.textContent = `${remDays} / ${student.totalDays} දින`;
+        daysEl.className = 'val ' + (remDays === 0 ? 'danger' : remDays <= 3 ? 'warn' : 'ok');
+      }
+    }
+
+    /* =====================================================================
+       5. SINHALA VOICE-TO-TEXT (si-LK)
+       ===================================================================== */
+    let recognition = null;
+    let isRecognizing = false;
+
+    function stopVoiceIfActive() {
+      if (recognition && isRecognizing) {
+        try { recognition.stop(); } catch (e) {}
+      }
+      isRecognizing = false;
+      const btn = document.getElementById('voice-btn');
+      if (btn) {
+        btn.classList.remove('listening');
+        btn.innerHTML = '🎤 සිංහල Voice';
+      }
+    }
+
+    function toggleSinhalaVoice() {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRec) {
+        playUiSound('error');
+        showToast('මෙම Browser එකේ Voice-to-Text පහසුකම නොමැත. Chrome භාවිත කරන්න.');
+        return;
+      }
+
+      if (window.location.protocol === 'file:') {
+        playUiSound('error');
+        showToast('⚠️ ෆෝන් එකේ File විදිහට ඕපන් කර ඇති නිසා Voice block වේ. HTTPS / Server එකකට දැමූ විට වැඩ කරයි.');
+        return;
+      }
+
+      if (isRecognizing) {
+        stopVoiceIfActive();
+        playUiSound('tap');
+        return;
+      }
+
+      playUiSound('tap');
+      recognition = new SpeechRec();
+      recognition.lang = 'si-LK';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      const btn = document.getElementById('voice-btn');
+      isRecognizing = true;
+      btn.classList.add('listening');
+      btn.innerHTML = '🛑 සවන් දෙමින්... (Stop)';
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        const ta = document.getElementById('question-input');
+        ta.value = ta.value ? (ta.value.trim() + ' ' + transcript) : transcript;
+        ta.focus();
+        playUiSound('success');
+        showToast('🎤 සිංහල වචන සටහන් විය!');
+      };
+
+      recognition.onerror = (ev) => {
+        stopVoiceIfActive();
+        playUiSound('error');
+        const errCode = ev && ev.error ? ev.error : '';
+        if (errCode === 'not-allowed' || errCode === 'service-not-allowed') {
+          showToast('Microphone අවසරය (Permission) ලබා දී නැත හෝ HTTPS අවශ්‍යයි.');
+        } else if (errCode === 'network') {
+          showToast('Voice සේවාවට Internet / Google Voice අවශ්‍යයි.');
+        } else {
+          showToast('Voice හඳුනාගැනීමට නොහැකි විය. නැවත උත්සාහ කරන්න.');
+        }
+      };
+
+      recognition.onend = () => {
+        stopVoiceIfActive();
+      };
+
+      try {
+        recognition.start();
+      } catch (e) {
+        stopVoiceIfActive();
+      }
+    }
+
+    /* =====================================================================
+       6. SMART RATIO IMAGE COMPRESSION (NO DIMENSION / RESOLUTION CHANGE)
+       ===================================================================== */
+    function estimateDataUrlBytes(dataUrl) {
+      const base64 = dataUrl.split(',')[1] || '';
+      return Math.round((base64.length * 3) / 4);
+    }
+
+    function getSmartStartRatio(origBytes) {
+      const origKB = origBytes / 1024;
+      if (origKB > 4000) return 0.35;
+      if (origKB > 2000) return 0.50;
+      if (origKB > 900)  return 0.65;
+      if (origKB > 450)  return 0.78;
+      return 0.88;
+    }
+
+    function compressKeepDimensionsSmart(file, targetMaxKB = 320) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = new Image();
+          img.onload = () => {
+            const origW = img.naturalWidth || img.width;
+            const origH = img.naturalHeight || img.height;
+            const origBytes = file.size;
+            const origKB = (origBytes / 1024).toFixed(1);
+
+            const canvas = document.createElement('canvas');
+            canvas.width = origW;
+            canvas.height = origH;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, origW, origH);
+
+            const targetBytes = targetMaxKB * 1024;
+
+            if (origBytes <= targetBytes) {
+              resolve({
+                dataUrl: ev.target.result,
+                origKB,
+                newKB: origKB,
+                width: origW,
+                height: origH,
+                ratio: '100% (Limit ඇතුළත)'
+              });
+              return;
+            }
+
+            let quality = getSmartStartRatio(origBytes);
+            let bestDataUrl = canvas.toDataURL('image/jpeg', quality);
+            let bestBytes = estimateDataUrlBytes(bestDataUrl);
+
+            for (let step = 0; step < 10; step++) {
+              if (bestBytes <= targetBytes) break;
+              quality = Math.max(0.12, Number((quality - 0.07).toFixed(2)));
+              const candidateUrl = canvas.toDataURL('image/jpeg', quality);
+              const candidateBytes = estimateDataUrlBytes(candidateUrl);
+              bestDataUrl = candidateUrl;
+              bestBytes = candidateBytes;
+              if (quality <= 0.12) break;
+            }
+
+            if (bestBytes < targetBytes * 0.75 && quality < 0.85) {
+              let upQ = Math.min(0.88, Number((quality + 0.05).toFixed(2)));
+              const upUrl = canvas.toDataURL('image/jpeg', upQ);
+              const upBytes = estimateDataUrlBytes(upUrl);
+              if (upBytes <= targetBytes) {
+                bestDataUrl = upUrl;
+                bestBytes = upBytes;
+                quality = upQ;
+              }
+            }
+
+            resolve({
+              dataUrl: bestDataUrl,
+              origKB,
+              newKB: (bestBytes / 1024).toFixed(1),
+              width: origW,
+              height: origH,
+              ratio: `${Math.round(quality * 100)}%`
+            });
+          };
+          img.onerror = () => reject(new Error('Image load failed'));
+          img.src = ev.target.result;
+        };
+        reader.onerror = () => reject(new Error('File read failed'));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function handleStudentImageSelect(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      playUiSound('tap');
+      showToast('⏳ Image එක Smart Ratio වලින් Compress කරමින්...');
+      try {
+        const res = await compressKeepDimensionsSmart(file, 320);
+        studentCompressedImage = res;
+        document.getElementById('st-img-preview').src = res.dataUrl;
+        document.getElementById('st-img-info').textContent =
+          `මුල්: ${res.origKB} KB ➔ දැන්: ${res.newKB} KB (Ratio ${res.ratio}) • ${res.width}×${res.height}px (වෙනස් කළේ නැත)`;
+        document.getElementById('st-img-preview-wrap').classList.remove('hidden');
+        playUiSound('success');
+        showToast(`✅ Image එක ${res.newKB} KB ට සැකසිණි!`);
+      } catch (err) {
+        playUiSound('error');
+        showToast('Image එක සැකසීමට නොහැකි විය.');
+      }
+    }
+
+    function clearStudentImage() {
+      playUiSound('tap');
+      studentCompressedImage = null;
+      const inp = document.getElementById('st-image-input');
+      if (inp) inp.value = '';
+      document.getElementById('st-img-preview').src = '';
+      document.getElementById('st-img-preview-wrap').classList.add('hidden');
+    }
+
+    async function handleAdminImageSelect(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      playUiSound('tap');
+      showToast('⏳ රූපසටහන Smart Ratio වලින් Compress කරමින්...');
+      try {
+        const res = await compressKeepDimensionsSmart(file, 320);
+        adminCompressedImage = res;
+        document.getElementById('admin-img-preview').src = res.dataUrl;
+        document.getElementById('admin-img-info').textContent =
+          `මුල්: ${res.origKB} KB ➔ දැන්: ${res.newKB} KB (Ratio ${res.ratio}) • ${res.width}×${res.height}px (වෙනස් කළේ නැත)`;
+        document.getElementById('admin-img-preview-wrap').classList.remove('hidden');
+        playUiSound('success');
+      } catch (err) {
+        playUiSound('error');
+        showToast('Image එක සැකසීමට නොහැකි විය.');
+      }
+    }
+
+    function clearAdminImage() {
+      playUiSound('tap');
+      adminCompressedImage = null;
+      const inp = document.getElementById('admin-image-input');
+      if (inp) inp.value = '';
+      document.getElementById('admin-img-preview').src = '';
+      document.getElementById('admin-img-preview-wrap').classList.add('hidden');
+    }
+
+    /* =====================================================================
+       7. STUDENT VIEW & LOGIC
+       ===================================================================== */
+    function openStudentView() {
+      document.getElementById('login-view').classList.add('hidden');
+      document.getElementById('instructor-view').classList.add('hidden');
+      document.getElementById('student-view').classList.remove('hidden');
+      document.getElementById('logout-btn').classList.remove('hidden');
+      updateClock();
+      renderCategoriesAccordion();
+      refreshStudentDashboard();
+    }
+
+    function refreshStudentDashboard() {
+      if (!currentUser || currentUser.role !== 'student') return;
+      const student = appState.students.find(s => s.username === currentUser.username);
+      if (!student) return;
+
+      const pkg = PACKAGES[student.packageId] || PACKAGES[1];
+      const remDays = getRemainingDays(student);
+
+      document.getElementById('st-user-label').textContent = `${student.username} (${student.name})`;
+      document.getElementById('st-pkg-name').textContent = `Category ${pkg.id}`;
+
+      const attEl = document.getElementById('st-attempts');
+      attEl.textContent = `${student.remainingAttempts} / ${student.totalAttempts}`;
+      attEl.className = 'val ' + (student.remainingAttempts === 0 ? 'danger' : student.remainingAttempts <= 2 ? 'warn' : 'ok');
+
+      const daysEl = document.getElementById('st-days');
+      daysEl.textContent = `${remDays} / ${student.totalDays} දින`;
+      daysEl.className = 'val ' + (remDays === 0 ? 'danger' : remDays <= 3 ? 'warn' : 'ok');
+
+      const lockAlert = document.getElementById('st-lock-alert');
+      const sendBtn = document.getElementById('send-q-btn');
+
+      if (student.locked) {
+        lockAlert.textContent = '⚠️ ඔබගේ ගිණුම අවහිර කර ඇත (Account Locked). ප්‍රශ්න යොමු කළ නොහැක.';
+        lockAlert.classList.remove('hidden');
+        sendBtn.disabled = true;
+      } else if (remDays === 0 && (Date.now() - (student.startDate || 0)) >= ((student.totalDays || 14) * 86400000)) {
+        lockAlert.textContent = '⏳ ඔබගේ පැකේජයේ වලංගු කාලය (පැය 24 චක්‍රය) අවසන් වී ඇත (Expired). නව පැකේජයක් සඳහා අමතන්න.';
+        lockAlert.classList.remove('hidden');
+        sendBtn.disabled = true;
+      } else if (student.remainingAttempts <= 0) {
+        lockAlert.textContent = '🚫 ඔබගේ පැකේජයේ ප්‍රශ්න සීමාව (Attempts) අවසන් වී ඇත. නව පැකේජයක් ලබා ගන්න.';
+        lockAlert.classList.remove('hidden');
+        sendBtn.disabled = true;
+      } else {
+        lockAlert.classList.add('hidden');
+        sendBtn.disabled = false;
+      }
+
+      renderStudentSolutions();
+    }
+
+    function switchStudentTab(tab) {
+      playUiSound('tap');
+      stopVoiceIfActive();
+      const isAsk = tab === 'ask';
+      document.getElementById('st-tab-ask').classList.toggle('active', isAsk);
+      document.getElementById('st-tab-solutions').classList.toggle('active', !isAsk);
+      document.getElementById('st-panel-ask').classList.toggle('hidden', !isAsk);
+      document.getElementById('st-panel-solutions').classList.toggle('hidden', isAsk);
+      if (!isAsk) renderStudentSolutions();
+    }
+
+    function renderCategoriesAccordion() {
+      const container = document.getElementById('category-accordion');
+      container.innerHTML = CATEGORIES.map(cat => {
+        const isOpen = selectedMainCat && selectedMainCat.id === cat.id;
+        return `
+          <div class="cat-card ${isOpen ? 'open selected' : ''}" id="cat-card-${cat.id}">
+            <button type="button" class="cat-header" onclick="toggleMainCategory('${cat.id}')">
+              <div class="cat-header-text">
+                <strong>${cat.title}</strong>
+                <span>${cat.si}</span>
+              </div>
+              <span class="cat-arrow">▼</span>
+            </button>
+            <div class="subcat-drawer">
+              <div class="subcat-grid">
+                ${cat.subs.map(sub => {
+                  const isSubActive = isOpen && selectedSubCat === sub;
+                  return `<button type="button" class="subcat-chip ${isSubActive ? 'active' : ''}" onclick="selectSubCategory('${cat.id}', '${sub.replace(/'/g, "\\'")}')">${sub}</button>`;
+                }).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleMainCategory(catId) {
+      playUiSound('tap');
+      if (selectedMainCat && selectedMainCat.id === catId) {
+        selectedMainCat = null;
+        selectedSubCat = null;
+      } else {
+        selectedMainCat = CATEGORIES.find(c => c.id === catId);
+        selectedSubCat = null;
+      }
+      updateSelectedTopicDisplay();
+      renderCategoriesAccordion();
+    }
+
+    function selectSubCategory(catId, subName) {
+      playUiSound('tap');
+      selectedMainCat = CATEGORIES.find(c => c.id === catId);
+      selectedSubCat = subName;
+      updateSelectedTopicDisplay();
+      renderCategoriesAccordion();
+    }
+
+    function updateSelectedTopicDisplay() {
+      const el = document.getElementById('selected-topic-display');
+      if (selectedMainCat && selectedSubCat) {
+        el.textContent = `📌 ${selectedMainCat.title} ➔ ${selectedSubCat}`;
+      } else if (selectedMainCat) {
+        el.textContent = `📌 ${selectedMainCat.title} — කරුණාකර Subcategory එකක් තෝරන්න`;
+      } else {
+        el.textContent = 'කරුණාකර ඉහතින් Main Category සහ Subcategory තෝරන්න';
+      }
+    }
+
+    function submitStudentQuestion() {
+      stopVoiceIfActive();
+      const student = appState.students.find(s => s.username === currentUser.username);
+      if (!student) return;
+
+      const isExpired = (Date.now() - (student.startDate || 0)) >= ((student.totalDays || 14) * 86400000);
+      if (student.locked || isExpired || student.remainingAttempts <= 0) {
+        playUiSound('error');
+        showToast('ප්‍රශ්නය යොමු කළ නොහැක. පැකේජය පරීක්ෂා කරන්න.');
+        return;
+      }
+
+      if (!selectedMainCat || !selectedSubCat) {
+        playUiSound('error');
+        showToast('කරුණාකර Main Category සහ Subcategory තෝරන්න.');
+        return;
+      }
+
+      const text = document.getElementById('question-input').value.trim();
+      if (!text && !studentCompressedImage) {
+        playUiSound('error');
+        showToast('කරුණාකර ඔබේ ප්‍රශ්නය ලියන්න හෝ Image එකක් අමුණන්න.');
+        return;
+      }
+
+      student.remainingAttempts -= 1;
+      const newQ = {
+        id: 'Q-' + Date.now(),
+        studentUsername: student.username,
+        studentName: student.name,
+        packageId: student.packageId,
+        mainCategory: selectedMainCat.title,
+        subCategory: selectedSubCat,
+        question: text || '(රූපසටහන පමණි)',
+        questionImage: studentCompressedImage ? studentCompressedImage.dataUrl : null,
+        questionImageMeta: studentCompressedImage ? `${studentCompressedImage.newKB} KB` : null,
+        answerHtml: '',
+        answerImage: null,
+        answerImageMeta: null,
+        status: 'pending',
+        createdAt: Date.now(),
+        answeredAt: null
+      };
+
+      appState.questions.push(newQ);
+      saveState();
+
+      document.getElementById('question-input').value = '';
+      clearStudentImage();
+      playUiSound('success');
+      showToast('✅ ඔබේ ප්‍රශ්නය සාර්ථකව යොමු කෙරිණි!');
+      refreshStudentDashboard();
+      switchStudentTab('solutions');
+    }
+
+    function renderStudentSolutions() {
+      const myQs = appState.questions
+        .filter(q => q.studentUsername === currentUser.username)
+        .sort((a, b) => b.createdAt - a.createdAt);
+
+      document.getElementById('st-sol-count').textContent = myQs.filter(q => q.status === 'answered').length;
+
+      const listEl = document.getElementById('student-solutions-list');
+      if (myQs.length === 0) {
+        listEl.innerHTML = `<div class="q-card" style="text-align:center; color:var(--text-sub);">ඔබ තවම ප්‍රශ්න යොමු කර නොමැත.</div>`;
+        return;
+      }
+
+      listEl.innerHTML = myQs.map(q => {
+        const dt = new Date(q.createdAt).toLocaleString('si-LK');
+        const isAns = q.status === 'answered';
+        return `
+          <div class="q-card">
+            <div class="q-meta">
+              <span>🕒 ${dt}</span>
+              <span class="status-pill ${isAns ? 'answered' : 'pending'}">
+                ${isAns ? '✅ විසඳුම ලැබී ඇත' : '⏳ පිළිතුර බලාපොරොත්තුවෙන්'}
+              </span>
+            </div>
+            <div class="q-topic">${escapeHtml(q.mainCategory)} ➔ ${escapeHtml(q.subCategory)}</div>
+            <div class="q-text">${escapeHtml(q.question)}</div>
+            ${q.questionImage ? `
+              <div class="attached-img-display">
+                <img src="${q.questionImage}" alt="Attached question image" />
+              </div>
+            ` : ''}
+            ${isAns ? `
+              <div class="solution-box">
+                <div class="solution-box-head">
+                  <span>💡 DulaChem තාක්ෂණික විසඳුම</span>
+                  <span>↕ Scroll කර කියවන්න</span>
+                </div>
+                <div class="solution-scroll-body">
+                  ${sanitizeRichHtml(q.answerHtml)}
+                  ${q.answerImage ? `
+                    <div class="attached-img-display" style="margin-top:14px;">
+                      <img src="${q.answerImage}" alt="Solution diagram" />
+                    </div>
+                  ` : ''}
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    /* =====================================================================
+       8. SAFE HTML SANITIZER (Renders rich web-page HTML safely)
+       ===================================================================== */
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function sanitizeRichHtml(dirtyHtml) {
+      if (!dirtyHtml) return '';
+      if (!/<[a-z][\s\S]*>/i.test(dirtyHtml)) {
+        return escapeHtml(dirtyHtml).replace(/\n/g, '<br>');
+      }
+
+      const template = document.createElement('template');
+      template.innerHTML = dirtyHtml;
+
+      const allowedTags = new Set([
+        'H1','H2','H3','H4','H5','H6','P','BR','HR','B','STRONG','I','EM','U',
+        'UL','OL','LI','TABLE','THEAD','TBODY','TR','TH','TD','BLOCKQUOTE',
+        'DIV','SPAN','CODE','PRE'
+      ]);
+      const allowedAttrs = new Set(['style', 'colspan', 'rowspan']);
+
+      function cleanNode(node) {
+        const children = Array.from(node.childNodes);
+        children.forEach(child => {
+          if (child.nodeType === Node.ELEMENT_NODE) {
+            if (!allowedTags.has(child.tagName)) {
+              if (['SCRIPT', 'STYLE', 'IFRAME', 'OBJECT', 'EMBED', 'LINK'].includes(child.tagName)) {
+                child.remove();
+              } else {
+                while (child.firstChild) node.insertBefore(child.firstChild, child);
+                child.remove();
+              }
+            } else {
+              Array.from(child.attributes).forEach(attr => {
+                const name = attr.name.toLowerCase();
+                const val = attr.value.toLowerCase();
+                if (!allowedAttrs.has(name) || val.includes('javascript:') || val.includes('expression(')) {
+                  child.removeAttribute(attr.name);
+                }
+              });
+              cleanNode(child);
+            }
+          }
+        });
+      }
+
+      cleanNode(template.content);
+      return template.innerHTML;
+    }
+
+    /* =====================================================================
+       9. INSTRUCTOR VIEW, PRIORITY QUEUE & STUDENT CONTROL BOARD
+       ===================================================================== */
+    function openInstructorView() {
+      document.getElementById('login-view').classList.add('hidden');
+      document.getElementById('student-view').classList.add('hidden');
+      document.getElementById('instructor-view').classList.remove('hidden');
+      document.getElementById('logout-btn').classList.remove('hidden');
+      refreshGeneratedCredentials();
+      renderInstructorQuestions();
+      renderStudentDirectory();
+    }
+
+    function switchInstructorTab(tab) {
+      playUiSound('tap');
+      const isQueue = tab === 'queue';
+      document.getElementById('in-tab-queue').classList.toggle('active', isQueue);
+      document.getElementById('in-tab-students').classList.toggle('active', !isQueue);
+      document.getElementById('in-panel-queue').classList.toggle('hidden', !isQueue);
+      document.getElementById('in-panel-students').classList.toggle('hidden', isQueue);
+      if (isQueue) renderInstructorQuestions();
+      else {
+        refreshGeneratedCredentials();
+        renderStudentDirectory();
+      }
+    }
+
+    function renderInstructorQuestions() {
+      const pendingCount = appState.questions.filter(q => q.status === 'pending').length;
+      document.getElementById('in-pending-badge').textContent = pendingCount;
+
+      const filter = document.getElementById('in-q-filter').value;
+      let list = [...appState.questions];
+
+      if (filter === 'pending') list = list.filter(q => q.status === 'pending');
+      if (filter === 'answered') list = list.filter(q => q.status === 'answered');
+
+      list.sort((a, b) => {
+        if (a.status === 'pending' && b.status !== 'pending') return -1;
+        if (a.status !== 'pending' && b.status === 'pending') return 1;
+        if (a.status === 'pending' && b.status === 'pending') return a.createdAt - b.createdAt;
+        return b.createdAt - a.createdAt;
+      });
+
+      const container = document.getElementById('instructor-questions-list');
+      if (list.length === 0) {
+        container.innerHTML = `<div class="q-card" style="text-align:center; color:var(--text-sub);">දැනට පෙන්වීමට ප්‍රශ්න නොමැත.</div>`;
+        return;
+      }
+
+      container.innerHTML = list.map(q => {
+        const isPending = q.status === 'pending';
+        const dt = new Date(q.createdAt).toLocaleString('si-LK');
+        return `
+          <div class="q-card instructor-q-item ${isPending ? 'pending-highlight' : ''}" onclick="openAnswerModal('${q.id}')">
+            <div class="q-meta">
+              <span><strong>${escapeHtml(q.studentUsername)}</strong> (${escapeHtml(q.studentName)}) • Cat ${q.packageId}</span>
+              <span class="status-pill ${isPending ? 'pending' : 'answered'}">
+                ${isPending ? '🔥 උත්තර දිය යුතුයි (Tap to Answer)' : '✅ පිළිතුරු දී ඇත'}
+              </span>
+            </div>
+            <div class="q-topic">${escapeHtml(q.mainCategory)} ➔ ${escapeHtml(q.subCategory)}</div>
+            <div class="q-text">${escapeHtml(q.question)}</div>
+            ${q.questionImage ? `
+              <div class="attached-img-display">
+                <img src="${q.questionImage}" alt="Student attached image" />
+              </div>
+            ` : ''}
+            <div style="font-size:0.74rem; color:var(--text-muted); margin-top:8px;">🕒 යොමු කළේ: ${dt}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openAnswerModal(qId) {
+      playUiSound('tap');
+      const q = appState.questions.find(item => item.id === qId);
+      if (!q) return;
+
+      activeAnswerQuestionId = qId;
+      document.getElementById('modal-q-details').innerHTML = `
+        <div style="font-size:0.8rem; color:#fbbf24; font-weight:700;">${escapeHtml(q.studentUsername)} — ${escapeHtml(q.studentName)}</div>
+        <div style="font-size:0.78rem; color:#6ee7b7; margin:3px 0 6px;">${escapeHtml(q.mainCategory)} ➔ ${escapeHtml(q.subCategory)}</div>
+        <div class="q-text">${escapeHtml(q.question)}</div>
+        ${q.questionImage ? `
+          <div class="attached-img-display">
+            <img src="${q.questionImage}" alt="Student image" />
+          </div>
+        ` : ''}
+      `;
+
+      document.getElementById('modal-answer-html').value = q.answerHtml || '';
+      clearAdminImage();
+      if (q.answerImage) {
+        adminCompressedImage = {
+          dataUrl: q.answerImage,
+          origKB: q.answerImageMeta || '--',
+          newKB: q.answerImageMeta || '--',
+          width: '',
+          height: '',
+          ratio: 'Saved'
+        };
+        document.getElementById('admin-img-preview').src = q.answerImage;
+        document.getElementById('admin-img-info').textContent = `දැනට අමුණා ඇති රූපසටහන (${q.answerImageMeta || 'Attached'})`;
+        document.getElementById('admin-img-preview-wrap').classList.remove('hidden');
+      }
+
+      updateAnswerPreview();
+      document.getElementById('answer-modal').classList.remove('hidden');
+    }
+
+    async function pasteFromClipboard() {
+      playUiSound('tap');
+      try {
+        const text = await navigator.clipboard.readText();
+        document.getElementById('modal-answer-html').value = text;
+        updateAnswerPreview();
+        showToast('Clipboard වෙතින් Paste කෙරිණි!');
+      } catch (err) {
+        showToast('කරුණාකර කොටුව මත තද කර Paste ඔබන්න.');
+      }
+    }
+
+    function updateAnswerPreview() {
+      const raw = document.getElementById('modal-answer-html').value;
+      const previewEl = document.getElementById('modal-answer-preview');
+      const imgHtml = adminCompressedImage
+        ? `<div class="attached-img-display" style="margin-top:12px;"><img src="${adminCompressedImage.dataUrl}" alt="Preview diagram" /></div>`
+        : '';
+
+      if (!raw.trim() && !adminCompressedImage) {
+        previewEl.innerHTML = '<span style="color:var(--text-muted);">පිළිතුර paste කළ විට මෙහි පෙනෙනු ඇත...</span>';
+        return;
+      }
+      previewEl.innerHTML = sanitizeRichHtml(raw) + imgHtml;
+    }
+
+    function saveInstructorAnswer() {
+      const q = appState.questions.find(item => item.id === activeAnswerQuestionId);
+      if (!q) return;
+
+      const htmlVal = document.getElementById('modal-answer-html').value.trim();
+      if (!htmlVal && !adminCompressedImage) {
+        playUiSound('error');
+        showToast('කරුණාකර HTML පිළිතුරක් හෝ Image එකක් ඇතුළත් කරන්න.');
+        return;
+      }
+
+      q.answerHtml = htmlVal;
+      q.answerImage = adminCompressedImage ? adminCompressedImage.dataUrl : null;
+      q.answerImageMeta = adminCompressedImage ? `${adminCompressedImage.newKB} KB` : null;
+      q.status = 'answered';
+      q.answeredAt = Date.now();
+      saveState();
+
+      playUiSound('success');
+      closeModal('answer-modal');
+      renderInstructorQuestions();
+      showToast('✅ විසඳුම සහ රූපසටහන Save විය!');
+    }
+
+    function closeModal(modalId) {
+      playUiSound('tap');
+      document.getElementById(modalId).classList.add('hidden');
+    }
+
+    /* ================= UNIQUE VJL-001 USERNAME & UNIQUE PASSWORD GENERATOR ================= */
+    function generateNextUsername() {
+      let maxNum = 0;
+      appState.students.forEach(s => {
+        const match = /^VJL-(\d+)$/i.exec(s.username.trim());
+        if (match) {
+          const num = parseInt(match[1], 10);
+          if (num > maxNum) maxNum = num;
+        }
+      });
+      return 'VJL-' + String(maxNum + 1).padStart(3, '0');
+    }
+
+    function generateUniquePassword() {
+      const existingPasswords = new Set(appState.students.map(s => s.password));
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let candidate = '';
+      do {
+        let rand = '';
+        for (let i = 0; i < 5; i++) {
+          rand += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        candidate = 'VJL#' + rand;
+      } while (existingPasswords.has(candidate));
+      return candidate;
+    }
+
+    function refreshGeneratedCredentials() {
+      document.getElementById('new-st-username').value = generateNextUsername();
+      document.getElementById('new-st-password').value = generateUniquePassword();
+    }
+
+    function handleAddStudent(e) {
+      e.preventDefault();
+      const name = document.getElementById('new-st-name').value.trim();
+      const pkgId = parseInt(document.getElementById('new-st-pkg').value, 10);
+      const username = generateNextUsername();
+      const password = document.getElementById('new-st-password').value.trim() || generateUniquePassword();
+      const pkg = PACKAGES[pkgId];
+
+      const now = Date.now();
+      const newStudent = {
+        username,
+        password,
+        name,
+        packageId: pkg.id,
+        totalAttempts: pkg.attempts,
+        remainingAttempts: pkg.attempts,
+        totalDays: pkg.days,
+        startDate: now,
+        endDate: now + pkg.days * 86400000,
+        locked: false
+      };
+
+      appState.students.push(newStudent);
+      saveState();
+
+      const waMsg =
+        `🌿 *විජාලී (DulaChem)* පෞද්ගලික පිවිසුම් විස්තර\n\n` +
+        `👤 නම: ${name}\n` +
+        `📦 පැකේජය: ${pkg.name}\n` +
+        `🔑 Username: ${username}\n` +
+        `🔒 Password: ${password}\n\n` +
+        `පද්ධතියට පිවිස තිරයට තට්ටු කර ඉහත Username සහ Password ඇතුළත් කරන්න.`;
+
+      copyTextToClipboard(waMsg);
+
+      document.getElementById('new-st-name').value = '';
+      refreshGeneratedCredentials();
+      renderStudentDirectory();
+      playUiSound('success');
+      showToast(`✅ ${username} සක්‍රීය කර WhatsApp විස්තර Copy කෙරිණි!`);
+    }
+
+    function toggleDirectoryPasswords() {
+      playUiSound('tap');
+      showDirPasswords = !showDirPasswords;
+      renderStudentDirectory();
+    }
+
+    function renderStudentDirectory() {
+      const query = (document.getElementById('student-search').value || '').trim().toLowerCase();
+      const filtered = appState.students.filter(s =>
+        s.username.toLowerCase().includes(query) || s.name.toLowerCase().includes(query)
+      );
+
+      const container = document.getElementById('student-directory-list');
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="q-card" style="text-align:center; color:var(--text-sub);">ගැළපෙන ශිෂ්‍යයන් හමු නොවීය.</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(s => {
+        const pkg = PACKAGES[s.packageId] || PACKAGES[1];
+        const remDays = getRemainingDays(s);
+        const passDisplay = showDirPasswords ? escapeHtml(s.password) : '••••••••';
+
+        return `
+          <div class="student-dir-card ${s.locked ? 'locked' : ''}">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+              <div>
+                <strong style="font-size:0.96rem;">${escapeHtml(s.name)}</strong>
+                <span style="font-size:0.78rem; color:var(--text-sub); display:block;">Category ${pkg.id} • ඉතිරි: ${s.remainingAttempts}/${s.totalAttempts} ප්‍රශ්න | ${remDays}/${s.totalDays} දින</span>
+              </div>
+              <span class="status-pill ${s.locked ? 'pending' : 'answered'}" style="${s.locked ? 'background:var(--danger-bg); color:#fca5a5; border-color:var(--danger);' : ''}">
+                ${s.locked ? '🔒 LOCKED' : '🟢 ACTIVE'}
+              </span>
+            </div>
+
+            <div class="cred-row">
+              <span>User: <span class="cred-tag">${escapeHtml(s.username)}</span></span>
+              <span>Pass: <span class="cred-tag" style="color:#fbbf24;">${passDisplay}</span></span>
+              <button type="button" class="mini-btn" onclick="copyStudentCreds('${s.username}')">📋 Copy Login</button>
+            </div>
+
+            <div class="action-row">
+              <button type="button" class="mini-btn gold" onclick="openRenewModal('${s.username}')">🔄 පැකේජය අලුත් කරන්න (Top-Up)</button>
+              <button type="button" class="mini-btn ${s.locked ? 'green' : 'red'}" onclick="toggleStudentLock('${s.username}')">
+                ${s.locked ? '🔓 Unlock කරන්න' : '🚫 Lock (අවහිර කරන්න)'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function copyStudentCreds(username) {
+      playUiSound('tap');
+      const s = appState.students.find(item => item.username === username);
+      if (!s) return;
+      const pkg = PACKAGES[s.packageId] || PACKAGES[1];
+      const msg =
+        `🌿 *විජාලී (DulaChem)* පිවිසුම් විස්තර\n` +
+        `👤 නම: ${s.name}\n` +
+        `📦 පැකේජය: ${pkg.name}\n` +
+        `🔑 Username: ${s.username}\n` +
+        `🔒 Password: ${s.password}`;
+      copyTextToClipboard(msg);
+      showToast(`${s.username} Login විස්තර Copy කෙරිණි!`);
+    }
+
+    function toggleStudentLock(username) {
+      const s = appState.students.find(item => item.username === username);
+      if (!s) return;
+      s.locked = !s.locked;
+      saveState();
+      playUiSound(s.locked ? 'error' : 'success');
+      renderStudentDirectory();
+      showToast(s.locked ? `🔒 ${s.username} ගිණුම අවහිර කෙරිණි!` : `🔓 ${s.username} ගිණුම නැවත සක්‍රීය කෙරිණි!`);
+    }
+
+    /* ================= MOBILE CARD TOP-UP / RENEW RULE ================= */
+    function openRenewModal(username) {
+      playUiSound('tap');
+      const s = appState.students.find(item => item.username === username);
+      if (!s) return;
+      activeRenewUsername = username;
+      const remDays = getRemainingDays(s);
+      document.getElementById('renew-student-info').innerHTML =
+        `ශිෂ්‍යයා: <strong>${escapeHtml(s.name)} (${escapeHtml(s.username)})</strong><br/>` +
+        `වත්මන් තත්ත්වය: ඉතිරි ප්‍රශ්න <strong>${s.remainingAttempts}</strong> | ඉතිරි දින <strong>${remDays}</strong>`;
+      document.getElementById('renew-pkg-select').value = String(s.packageId);
+      document.getElementById('renew-modal').classList.remove('hidden');
+    }
+
+    function confirmRenewPackage() {
+      const s = appState.students.find(item => item.username === activeRenewUsername);
+      if (!s) return;
+
+      const newPkgId = parseInt(document.getElementById('renew-pkg-select').value, 10);
+      const pkg = PACKAGES[newPkgId];
+      const remDays = getRemainingDays(s);
+      const now = Date.now();
+
+      const isExpiredOrExhausted = (remDays <= 0) || (s.remainingAttempts <= 0);
+      const carryOverAttempts = isExpiredOrExhausted ? 0 : s.remainingAttempts;
+
+      s.packageId = pkg.id;
+      s.remainingAttempts = carryOverAttempts + pkg.attempts;
+      s.totalAttempts = s.remainingAttempts;
+      s.totalDays = pkg.days;
+      s.startDate = now;
+      s.endDate = now + pkg.days * 86400000;
+
+      saveState();
+      playUiSound('success');
+      closeModal('renew-modal');
+      renderStudentDirectory();
+      showToast(`✅ ${s.username} සඳහා Category ${pkg.id} සක්‍රීය කෙරිණි!`);
+    }
+
+    function refreshActiveView() {
+      if (!currentUser) return;
+      if (currentUser.role === 'student') refreshStudentDashboard();
+      if (currentUser.role === 'instructor') {
+        renderInstructorQuestions();
+        renderStudentDirectory();
+      }
+    }
+
+    /* ================= UTILITIES ================= */
+    function copyTextToClipboard(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).catch(() => {});
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+      }
+    }
+
+    let toastTimer = null;
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+    }
+  </script>
+</body>
+</html>
