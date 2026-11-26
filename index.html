@@ -652,6 +652,12 @@
       animation: pulseRing 1.3s infinite;
     }
 
+    .voice-hint {
+      font-size: 0.74rem;
+      color: var(--text-sub);
+      margin-top: 6px;
+    }
+
     .img-attach-box {
       background: rgba(15, 23, 42, 0.72);
       border: 1px dashed var(--border);
@@ -1092,6 +1098,9 @@
 
           <div class="form-group">
             <textarea id="question-input" rows="5" placeholder="ඔබේ තාක්ෂණික ගැටලුව, අමුද්‍රව්‍යය, උෂ්ණත්වය හෝ අවශ්‍යතාව ලියන්න හෝ Voice බොත්තම ඔබා කියන්න..."></textarea>
+            <div class="voice-hint">
+              💡 සිංහල Voice බොත්තම වැඩ නොකරන්නේ නම්, කොටුව මත ඔබා Keyboard එකේ 🎤 මයික් එකෙන් සිංහලෙන් කතා කරන්න.
+            </div>
           </div>
 
           <div class="img-attach-box">
@@ -1280,6 +1289,7 @@
   </div>
 
   <div id="toast"></div>
+
   <!-- ================= FIREBASE SDK (OPTIONAL CLOUD SYNC) ================= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -1728,7 +1738,7 @@
     }
 
     /* =====================================================================
-       5. SINHALA VOICE-TO-TEXT (si-LK)
+       5. SINHALA VOICE-TO-TEXT (si-LK WITH INTERIM RESULTS & FALLBACK)
        ===================================================================== */
     let recognition = null;
     let isRecognizing = false;
@@ -1747,15 +1757,18 @@
 
     function toggleSinhalaVoice() {
       const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const ta = document.getElementById('question-input');
+
       if (!SpeechRec) {
         playUiSound('error');
-        showToast('මෙම Browser එකේ Voice-to-Text පහසුකම නොමැත. Chrome භාවිත කරන්න.');
+        if (ta) ta.focus();
+        showToast('මෙම Browser එකේ Voice API නැත. Keyboard එකේ 🎤 ඔබා සිංහලෙන් කතා කරන්න.');
         return;
       }
 
       if (window.location.protocol === 'file:') {
         playUiSound('error');
-        showToast('⚠️ ෆෝන් එකේ File විදිහට ඕපන් කර ඇති නිසා Voice block වේ. HTTPS / Server එකකට දැමූ විට වැඩ කරයි.');
+        showToast('⚠️ HTTPS link එකෙන් (GitHub Pages) පමණක් Voice ක්‍රියා කරයි.');
         return;
       }
 
@@ -1768,44 +1781,60 @@
       playUiSound('tap');
       recognition = new SpeechRec();
       recognition.lang = 'si-LK';
-      recognition.interimResults = false;
+      recognition.continuous = false;
+      recognition.interimResults = true;
       recognition.maxAlternatives = 1;
 
       const btn = document.getElementById('voice-btn');
+      const baseText = ta ? ta.value.trim() : '';
+      let finalTranscript = '';
+
       isRecognizing = true;
       btn.classList.add('listening');
-      btn.innerHTML = '🛑 සවන් දෙමින්... (Stop)';
+      btn.innerHTML = '🛑 කතා කරන්න... (Stop)';
 
       recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        const ta = document.getElementById('question-input');
-        ta.value = ta.value ? (ta.value.trim() + ' ' + transcript) : transcript;
-        ta.focus();
-        playUiSound('success');
-        showToast('🎤 සිංහල වචන සටහන් විය!');
+        let interimTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const piece = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += piece + ' ';
+          } else {
+            interimTranscript += piece;
+          }
+        }
+        const combined = (finalTranscript + interimTranscript).trim();
+        if (ta && combined) {
+          ta.value = baseText ? (baseText + ' ' + combined) : combined;
+        }
       };
 
       recognition.onerror = (ev) => {
         stopVoiceIfActive();
         playUiSound('error');
+        if (ta) ta.focus();
         const errCode = ev && ev.error ? ev.error : '';
         if (errCode === 'not-allowed' || errCode === 'service-not-allowed') {
-          showToast('Microphone අවසරය (Permission) ලබා දී නැත හෝ HTTPS අවශ්‍යයි.');
-        } else if (errCode === 'network') {
-          showToast('Voice සේවාවට Internet / Google Voice අවශ්‍යයි.');
+          showToast('Mic Permission block වී ඇත. Chrome Site Settings -> Microphone -> Allow පරීක්ෂා කරන්න.');
         } else {
-          showToast('Voice හඳුනාගැනීමට නොහැකි විය. නැවත උත්සාහ කරන්න.');
+          showToast('Browser Voice සේවාව ක්‍රියා නොකරයි. Keyboard එකේ 🎤 ඔබා සිංහලෙන් කතා කරන්න!');
         }
       };
 
       recognition.onend = () => {
         stopVoiceIfActive();
+        if (ta && ta.value.trim()) {
+          playUiSound('success');
+          showToast('🎤 සිංහල වචන සටහන් විය!');
+        }
       };
 
       try {
         recognition.start();
       } catch (e) {
         stopVoiceIfActive();
+        if (ta) ta.focus();
+        showToast('Keyboard එකේ 🎤 Voice බොත්තම ඔබා කතා කරන්න.');
       }
     }
 
